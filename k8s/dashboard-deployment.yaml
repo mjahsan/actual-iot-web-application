@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: dashboard
+  namespace: landfill
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: dashboard
+
+  template:
+    metadata:
+      labels:
+        app: dashboard
+
+    spec:
+      containers:
+      - name: dashboard
+
+        image: 394489192653.dkr.ecr.us-east-1.amazonaws.com/landfill-dashboard:latest
+
+        ports:
+        - containerPort: 5000
+
+        envFrom:
+        - secretRef:
+            name: postgres-secret

@@ -1,0 +1,75 @@
+version: '3.8'
+
+networks:
+  landfill-mesh:
+    driver: bridge
+
+volumes:
+  postgres_compliance_data:
+    driver: local
+
+services:
+  # --------------------------------------------------------
+  # DATA LAYER: Secure, Persistent PostgreSQL Storage
+  # --------------------------------------------------------
+  landfill-db:
+    image: postgres:15-alpine
+    container_name: landfill_secure_db
+    restart: unless-stopped
+    networks:
+      - landfill-mesh
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_compliance_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${DB_USER} -d $${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # --------------------------------------------------------
+  # PIPELINE INGESTION LAYER: Background IoT Simulator
+  # --------------------------------------------------------
+  data-simulator:
+    build:
+      context: ./data-simulator
+      dockerfile: Dockerfile
+    container_name: landfill_iot_simulator
+    restart: always
+    networks:
+      - landfill-mesh
+    environment:
+      - DB_HOST=landfill-db
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+    depends_on:
+      landfill-db:
+        condition: service_healthy  # Ensures data layer is healthy before ingestion starts
+
+  # --------------------------------------------------------
+  # APP DISPLAY LAYER: Public-facing Operational Dashboard
+  # --------------------------------------------------------
+  dashboard-app:
+    build:
+      context: ./dashboard-app
+      dockerfile: Dockerfile
+    container_name: landfill_flask_dashboard
+    restart: unless-stopped
+    networks:
+      - landfill-mesh
+    ports:
+      - "5000:5000"
+    environment:
+      - DB_HOST=landfill-db
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+    depends_on:
+      landfill-db:
+        condition: service_healthy
