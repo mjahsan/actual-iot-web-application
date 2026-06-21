@@ -7,7 +7,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout Repo
-              run: actions/checkout@v7
+              uses: actions/checkout@v7
 
             - name: Welcome
               run: echo "Below are the files of this repo"
