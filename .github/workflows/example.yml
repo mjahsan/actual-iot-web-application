@@ -1,0 +1,19 @@
+name: Workflow Web Application
+
+on: 
+  push:
+    branches-ignore:
+      - 'main'
+
+jobs:
+    job1:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout Repo
+              uses: actions/checkout@v7
+
+            - name: Welcome
+              run: echo "Below are the files of this repo"
+              
+            - name: List files
+              run: ls
