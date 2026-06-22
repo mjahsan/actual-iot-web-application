@@ -1,7 +1,7 @@
 from unittest.mock import patch, MagicMock
 import pytest
 
-from app import app, get_live_data
+from dashboard_app.app import app, get_live_data
 
 
 def test_get_live_data_success():
