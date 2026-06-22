@@ -1,6 +1,9 @@
 name: Workflow Web Application
 
-on: push
+on: 
+  push:
+    branches-ignore:
+      - 'main'
 
 jobs:
     job1:
