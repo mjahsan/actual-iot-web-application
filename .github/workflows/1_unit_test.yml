@@ -18,7 +18,7 @@ jobs:
                 python-version: '3.13' 
 
             - name: Installing dependencies
-              run: pip install -f ./tests/requirements.txt
+              run: pip install -r ./tests/requirements.txt
               
             - name: App and Simulator tests
               run: |
