@@ -24,7 +24,7 @@ jobs:
             - name: App and Simulator tests
               run: |
                 pytest tests/ \
-                --cov=dashbaord_app \
+                --cov=dashboard_app \
                 --cov=data_simulator \
                 --cov-report=term-missing \
                 --cov-fail-under=80
