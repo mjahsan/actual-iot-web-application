@@ -24,11 +24,11 @@ jobs:
             - name: App and Simulator tests
               run: |
                 pytest tests/ \
-                --junitxml=pytest_results.xml \
+                --junitxml=./tests/pytest_results.xml \
                 --cov=dashboard_app \
                 --cov=data_simulator \
                 --cov-report=term-missing \
-                --cov-report=xml:coverage_results.xml \
+                --cov-report=xml:./coverage/coverage_results.xml \
                 --cov-fail-under=80
             
             - name: Archive Test & Coverage Results
@@ -37,7 +37,7 @@ jobs:
               with:
                 name: pytest_and_coverage_results
                 path: |
-                  tests/pytest_results.xml
-                  coverage/coverage_results.xml
+                  ./tests/pytest_results.xml
+                  ./coverage/coverage_results.xml
 
 
