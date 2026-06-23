@@ -4,11 +4,9 @@ on:
   push:
     branches:
       - 'feature/*'
-    branches-ignore:
-      - 'main'
 
 jobs:
-    Unit Tests:
+    Unit-Tests:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout Repo
@@ -18,6 +16,14 @@ jobs:
               uses: actions/setup-python@v6
               with:
                 python-version: '3.13' 
+
+            - name: Installing dependencies
+              run: pip install -f ./tests/requirements.txt
               
-            - name: List files
-              run: ls
+            - name: App and Simulator tests
+              run: |
+              pytest tests/ \
+              --cov=dashbaord_app \
+              --cov=data_simulator
+              --cov-report=term-missing \
+              --cov-fail-under=80
