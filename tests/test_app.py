@@ -14,7 +14,7 @@ def test_get_live_data_success():
 
     mock_conn.cursor.return_value = mock_cursor
 
-    with patch("app.psycopg2.connect", return_value=mock_conn):
+    with patch("dashboard_app.app.psycopg2.connect", return_value=mock_conn):
         result = get_live_data()
 
     assert len(result) == 1
@@ -27,7 +27,7 @@ def test_get_live_data_success():
 
 def test_get_live_data_db_failure():
     with patch(
-        "app.psycopg2.connect",
+        "dashboard_app.app.psycopg2.connect",
         side_effect=Exception("Database unavailable")
     ):
         result = get_live_data()
@@ -49,7 +49,7 @@ def test_index_route_returns_200(client):
         ("SENSOR-NORTH-01", 2.5, 0, "2026-06-22 10:00:00")
     ]
 
-    with patch("app.get_live_data", return_value=fake_data):
+    with patch("dashboard_app.app.get_live_data", return_value=fake_data):
         response = client.get("/")
 
     assert response.status_code == 200
@@ -61,7 +61,7 @@ def test_index_route_handles_error_record(client):
         ("Error", "Could not connect to DB", 0, "N/A")
     ]
 
-    with patch("app.get_live_data", return_value=fake_data):
+    with patch("dashboard_app.app.get_live_data", return_value=fake_data):
         response = client.get("/")
 
     assert response.status_code == 200
