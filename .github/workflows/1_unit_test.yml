@@ -25,6 +25,6 @@ jobs:
               run: |
                 pytest tests/ \
                 --cov=dashbaord_app \
-                --cov=data_simulator
+                --cov=data_simulator \
                 --cov-report=term-missing \
                 --cov-fail-under=80
