@@ -32,7 +32,7 @@ jobs:
                 --cov-fail-under=80
             
             - name: Archive Test & Coverage Results
-              uses: actions/upload-artifact@v4
+              uses: actions/upload-artifact@v7
               if: always()
               with:
                 name: pytest_and_coverage_results
