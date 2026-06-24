@@ -9,8 +9,8 @@ jobs:
     unit-tests:
         timeout-minutes: 2 
         strategy:
-        matrix:
-            python_version: [3.11, 3.12, 3.13] # To test the app across multiple runtimes
+            matrix:
+                python_version: [3.11, 3.12, 3.13] # To test the app across multiple runtimes
         runs-on: ubuntu-latest
         steps:
             - name: Checkout Repo
