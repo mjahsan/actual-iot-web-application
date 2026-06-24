@@ -1,0 +1,110 @@
+name: Workflow Web Application
+
+on: 
+  push:
+    branches:
+      - 'feature/*' # Workflow only for feature branch
+
+jobs:
+  step-1-dependencies-vulnerability-checks:
+    # ---------------------------------------------------------------------------------
+    # 1. Verify depencies vulnerability
+    # ---------------------------------------------------------------------------------
+    timeout-minutes: 2 # To eliminate long running jobs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v7
+      
+      - name: Python Runtime
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      
+      - name: Install pip audits
+        run: pip install pip-audit
+
+      - name: Scan Dashboard Dependencies
+        continue-on-error: true # Continuing on error/vulnerability issues but exporting audit result for future inspection
+        run: pip-audit -r ./dashboard_app/requirements.txt --format json > ./dashboard_audit_result.json
+
+      - name: Scan Simulator Dependencies
+        continue-on-error: true # Continuing on error/vulnerability issues but exporting audit result for future inspection
+        run: pip-audit -r ./data_simulator/requirements.txt --format json > ./simulator_audit_result.json
+        
+      - name: Scan Test Dependencies
+        continue-on-error: true # Continuing on error/vulnerability issues but exporting audit result for future inspection
+        run: pip-audit -r ./tests/requirements.txt --format json > ./test_audit_result.json
+      
+      - name: Archive Test & Coverage Results
+        uses: actions/upload-artifact@v7 # Archiving audit results
+        with:
+          name: audit_results
+          path: |
+            ./dashboard_audit_result.json
+            ./simulator_audit_result.json
+            ./test_audit_result.json
+          
+
+  step-2-unit-tests:
+    # -----------------------------------------------------------------------------------------------------
+    # 2. Conduct testing and code coverage upon successful completion of dependencies vulnerability check
+    # -----------------------------------------------------------------------------------------------------
+    needs: step-1-dependencies-vulnerability-checks # Establishing sequential execution
+    timeout-minutes: 2 
+    strategy:
+      matrix:
+        python_version: [3.11, 3.12, 3.13] # To test the app across multiple runtimes
+    runs-on: ubuntu-latest
+    steps:
+        - name: Checkout Repo
+          uses: actions/checkout@v7
+
+        - name: Python Runtime - ${{ matrix.python_version }}
+          uses: actions/setup-python@v6
+          with:
+            python-version: ${{ matrix.python_version }}
+        
+        - name: Cache pip packages
+          uses: actions/cache@v4
+          with:
+            path: ~/.cache/pip # Directory where pip downloads are saved
+            key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+            restore-keys: ${{ runner.os }}-pip- # Restoring previous cache directory for unchanged dependencies if the requirement.txt file changes
+
+        - name: Installing dependencies
+          run: pip install -r ./tests/requirements.txt
+          
+        - name: App and Simulator:Tests
+          run: |
+            pytest tests/ \
+            --junitxml=./tests/pytest_results.xml 
+          # Downloading test results for archiving
+
+        - name: App and Simulator:Code Coverage
+          continue-on-error: True # Continues with subsequent steps if the current step fails
+          run: |
+            pytest --cov=dashboard_app \
+            --cov=data_simulator \
+            --cov-report=term-missing \
+            --cov-report=xml:./coverage/coverage_results.xml \
+            --cov-fail-under=80
+          # Downloading code coverage report for archiving
+        
+        - name: Archive Test & Coverage Results
+          uses: actions/upload-artifact@v7
+          if: always()
+          # Enables archiving even if the test or code coverage fails
+          with:
+            name: pytest_and_coverage_results
+            path: |
+              ./tests/pytest_results.xml
+              ./coverage/coverage_results.xml
+
+  step-3-static-code-analysis:
+    steps:
+      
+
+
+
+

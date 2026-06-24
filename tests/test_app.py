@@ -49,7 +49,7 @@ def test_index_route_returns_200(client):
         ("SENSOR-NORTH-01", 2.5, 0, "2026-06-22 10:00:00")
     ]
 
-    with patch("app.get_live_data", return_value=fake_data):
+    with patch("dashboard_app.app.get_live_data", return_value=fake_data):
         response = client.get("/")
 
     assert response.status_code == 200
@@ -61,7 +61,7 @@ def test_index_route_handles_error_record(client):
         ("Error", "Could not connect to DB", 0, "N/A")
     ]
 
-    with patch("app.get_live_data", return_value=fake_data):
+    with patch("dashboard_app.app.get_live_data", return_value=fake_data):
         response = client.get("/")
 
     assert response.status_code == 200
