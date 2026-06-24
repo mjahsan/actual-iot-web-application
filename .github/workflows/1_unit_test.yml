@@ -19,7 +19,7 @@ jobs:
             - name: Python Runtime - ${{ matrix.puthon_version }}
               uses: actions/setup-python@v6
               with:
-                python-version: ${{ matrix.puthon_version }}
+                python-version: ${{ matrix.python_version }}
             
                 - name: Cache pip packages
                   uses: actions/cache@v4
