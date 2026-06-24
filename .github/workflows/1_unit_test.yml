@@ -6,7 +6,7 @@ on:
       - 'feature/*' # Workflow only for feature branch
 
 jobs:
-  1.dependencies-vulnerability-checks:
+  1-dependencies-vulnerability-checks:
     # ---------------------------------------------------------------------------------
     # 1. Verify depencies vulnerability
     # ---------------------------------------------------------------------------------
@@ -37,7 +37,7 @@ jobs:
         run: |
           
 
-  2.unit-tests:
+  2-unit-tests:
     # -----------------------------------------------------------------------------------------------------
     # 2. Conduct testing and code coverage upon successful completion of dependencies vulnerability check
     # -----------------------------------------------------------------------------------------------------
