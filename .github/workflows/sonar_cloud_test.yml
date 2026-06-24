@@ -71,7 +71,7 @@ jobs:
                 name: pytest_and_coverage_results
             
             - name: SonarCloud Scan
-              uses: SonarSource/sonarqube-scan-action@v5
+              uses: SonarSource/sonarqube-scan-action@v6
               env:
                 SONAR_TOKEN: ${{ env.SONAR_CLOUD_KEY }}
     
