@@ -6,7 +6,7 @@ on:
       - 'feature/*' # Workflow only for feature branch
 
 jobs:
-    Unit-Tests:
+    unit-tests:
         timeout-minutes: 2 # To eliminate long running jobs
         strategy:
           matrix:
@@ -21,12 +21,12 @@ jobs:
               with:
                 python-version: ${{ matrix.version }}
             
-                - name: Cache pip packages
-                  uses: actions/cache@v4
-                  with:
-                    path: ~/.cache/pip # Directory where pip downloads are saved
-                    key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-                    restore-keys: ${{ runner.os }}-pip- # Restoring previous cache directory for unchanged dependencies if the requirement.txt file changes
+            - name: Cache pip packages
+              uses: actions/cache@v4
+              with:
+                path: ~/.cache/pip # Directory where pip downloads are saved
+                key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+                restore-keys: ${{ runner.os }}-pip- # Restoring previous cache directory for unchanged dependencies if the requirement.txt file changes
 
             - name: Installing dependencies
               run: pip install -r ./tests/requirements.txt
