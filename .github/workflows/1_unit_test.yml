@@ -3,37 +3,54 @@ name: Workflow Web Application
 on: 
   push:
     branches:
-      - 'feature/*'
+      - 'feature/*' # Workflow only for feature branch
 
 jobs:
     Unit-Tests:
+        timeout-minutes: 2 # To eliminate long running jobs
+        strategy:
+          matrix:
+            python_version: [3.11, 3.12, 3.13] # To test the app across multiple runtimes
         runs-on: ubuntu-latest
-        timeout-minutes: 2
         steps:
             - name: Checkout Repo
               uses: actions/checkout@v7
 
-            - name: Python Runtime
+            - name: Python Runtime - ${{ matrix.puthon_version }}
               uses: actions/setup-python@v6
               with:
-                python-version: '3.13' 
+                python-version: ${{ matrix.puthon_version }}
+            
+                - name: Cache pip packages
+                  uses: actions/cache@v4
+                  with:
+                    path: ~/.cache/pip # Directory where pip downloads are saved
+                    key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+                    restore-keys: ${{ runner.os }}-pip- # Restoring previous cache directory for unchanged dependencies if the requirement.txt file changes
 
             - name: Installing dependencies
               run: pip install -r ./tests/requirements.txt
               
-            - name: App and Simulator tests
+            - name: App and Simulator:Tests
               run: |
                 pytest tests/ \
-                --junitxml=./tests/pytest_results.xml \
-                --cov=dashboard_app \
+                --junitxml=./tests/pytest_results.xml 
+              # Downloading test results for archiving
+
+            - name: App and Simulator:Code Coverage
+              continue-on-error: True # Continues with subsequent steps if the current step fails
+              run: |
+                pytest --cov=dashboard_app \
                 --cov=data_simulator \
                 --cov-report=term-missing \
                 --cov-report=xml:./coverage/coverage_results.xml \
                 --cov-fail-under=80
+              # Downloading code coverage report for archiving
             
             - name: Archive Test & Coverage Results
               uses: actions/upload-artifact@v7
               if: always()
+              # Enables archiving even if the test or code coverage fails
               with:
                 name: pytest_and_coverage_results
                 path: |
