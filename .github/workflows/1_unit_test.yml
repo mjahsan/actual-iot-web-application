@@ -41,7 +41,7 @@ jobs:
     # -----------------------------------------------------------------------------------------------------
     # 2. Conduct testing and code coverage upon successful completion of dependencies vulnerability check
     # -----------------------------------------------------------------------------------------------------
-    needs: dependencies-vulnerability-checks # Establishing sequential execution
+    needs: step-1-dependencies-vulnerability-checks # Establishing sequential execution
     timeout-minutes: 2 # To eliminate long running jobs
     strategy:
       matrix:
