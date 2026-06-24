@@ -45,7 +45,6 @@ jobs:
             ./simulator_audit_result.json
             ./test_audit_result.json
           
-
   step-2-unit-tests:
     # -----------------------------------------------------------------------------------------------------
     # 2. Conduct testing and code coverage upon successful completion of dependencies vulnerability check
@@ -100,8 +99,49 @@ jobs:
             path: |
               ./tests/pytest_results.xml
               ./coverage/coverage_results.xml
-      
 
+  # step-3-sonar-cloud-static-analysis:
+    # ------------------------------------------------------------------------------------------------------------------------
+    # 3. Conduct static analysis on the code. Have made that a part of 'main' as the sonar cloud is restricted to only 'main' branches. Refer to sonar_cloud_test.yml
+    # ------------------------------------------------------------------------------------------------------------------------
+
+  step-4-docker-image-build-and-trivy-scan:
+    # -----------------------------------------------------------------------------------------------------
+    # 4. Build docker image of the dashboard app and simulator
+    # -----------------------------------------------------------------------------------------------------
+    needs: step-2-unit-tests
+    runs-on: ubuntu latest
+    steps:
+        - name: Checkout Repo
+          uses: actions/checkout@v7
+
+        - name: Docker Build - Dashboard App Image
+          run: |
+          docker build -t dashboard_app:${{ github.sha }} ./dashboard_app/
+        # github.sha is used for traceability - no verify which version of the code or commit is running on the cluster
+
+        - name: Docker Build - Simulator Image
+          run: |
+          docker build -t simulator:${{ github.sha }} ./data_simulator/
+        # github.sha is used for traceability - no verify which version of the code or commit is running on the cluster
+
+        - name: Trivy Image Scan- Dashboard App
+          uses: aquasecurity/trivy-action@v0.36.0
+          with:
+            image-ref: 'dashboard_app:${{ github.sha }}'
+            format: 'table'
+            exit-code: '1' # Stopping the pipeline to prevent vulnerable images from getting pushed to ECR
+            ignore-unfixed: true
+            severity: 'CRITICAL,HIGH'
+
+        - name: Trivy Image Scan- Simulator
+          uses: aquasecurity/trivy-action@v0.36.0
+          with:
+            image-ref: 'simulator:${{ github.sha }}'
+            format: 'table'
+            exit-code: '1' # Stopping the pipeline to prevent vulnerable images from getting pushed to ECR
+            ignore-unfixed: true
+            severity: 'CRITICAL,HIGH'
 
 
 

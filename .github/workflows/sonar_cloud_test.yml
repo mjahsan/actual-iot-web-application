@@ -1,3 +1,8 @@
+"""
+# -----------------------------------------------------------------------------------------------------------------------------
+# Static Code Analysis - Should be in Step 3 of the feature branch but switched the trigger to main as the sonar cloud account is restricted to 'main' branch alone
+# ------------------------------------------------------------------------------------------------------------------------------
+
 name: Sonar Cloud Workflow
 
 on:
@@ -74,4 +79,5 @@ jobs:
               uses: SonarSource/sonarqube-scan-action@v6
               env:
                 SONAR_TOKEN: ${{ secrets.SONAR_CLOUD_KEY }}
-    
+
+"""
