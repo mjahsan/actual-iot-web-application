@@ -110,7 +110,7 @@ jobs:
     # 4. Build docker image of the dashboard app and simulator
     # -----------------------------------------------------------------------------------------------------
     needs: step-2-unit-tests
-    runs-on: ubuntu latest
+    runs-on: ubuntu-latest
     timeout-minutes: 4
     steps:
         - name: Checkout Repo
