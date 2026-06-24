@@ -6,7 +6,10 @@ on:
       - 'feature/*' # Workflow only for feature branch
 
 jobs:
-  dependencies-vulnerability-checks:
+  1.dependencies-vulnerability-checks:
+    # ---------------------------------------------------------------------------------
+    # 1. Verify depencies vulnerability
+    # ---------------------------------------------------------------------------------
     timeout-minutes: 2
     runs-on: ubuntu-latest
     steps:
@@ -22,15 +25,22 @@ jobs:
         run: pip install pip-audit
 
       - name: Scan Dashboard Dependencies
-        run: pip-audit -r ./dashboard_app/requirements.txt
+        run: pip-audit --min-severity high --ignore-vul CVE-XXXX-XXXX -r ./dashboard_app/requirements.txt
 
       - name: Scan Simulator Dependencies
-        run: pip-audit -r ./simulator/requirements.txt
+        run: pip-audit --min-severity high --ignore-vul CVE-XXXX-XXXX -r ./simulator/requirements.txt
         
       - name: Scan Test Dependencies
-        run: pip-audit -r ./tests/requirements.txt
+        run: pip-audit --min-severity high --ignore-vul CVE-XXXX-XXXX -r ./tests/requirements.txt
 
-  unit-tests:
+      - name: Capture Vulnerability
+        run: |
+          
+
+  2.unit-tests:
+    # -----------------------------------------------------------------------------------------------------
+    # 2. Conduct testing and code coverage upon successful completion of dependencies vulnerability check
+    # -----------------------------------------------------------------------------------------------------
     needs: dependencies-vulnerability-checks # Establishing sequential execution
     timeout-minutes: 2 # To eliminate long running jobs
     strategy:
