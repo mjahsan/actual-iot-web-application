@@ -10,7 +10,7 @@ jobs:
     # ---------------------------------------------------------------------------------
     # 1. Verify depencies vulnerability
     # ---------------------------------------------------------------------------------
-    timeout-minutes: 2
+    timeout-minutes: 2 # To eliminate long running jobs
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
@@ -30,7 +30,7 @@ jobs:
 
       - name: Scan Simulator Dependencies
         continue-on-error: true # Continuing on error/vulnerability issues but exporting audit result for future inspection
-        run: pip-audit -r ./simulator/requirements.txt --format json > ./simulator_audit_result.json
+        run: pip-audit -r ./data_simulator/requirements.txt --format json > ./simulator_audit_result.json
         
       - name: Scan Test Dependencies
         continue-on-error: true # Continuing on error/vulnerability issues but exporting audit result for future inspection
@@ -51,7 +51,7 @@ jobs:
     # 2. Conduct testing and code coverage upon successful completion of dependencies vulnerability check
     # -----------------------------------------------------------------------------------------------------
     needs: step-1-dependencies-vulnerability-checks # Establishing sequential execution
-    timeout-minutes: 2 # To eliminate long running jobs
+    timeout-minutes: 2 
     strategy:
       matrix:
         python_version: [3.11, 3.12, 3.13] # To test the app across multiple runtimes
@@ -101,6 +101,9 @@ jobs:
               ./tests/pytest_results.xml
               ./coverage/coverage_results.xml
 
+  step-3-static-code-analysis:
+    steps:
+      
 
 
 
