@@ -54,11 +54,11 @@ jobs:
               with:
                 name: pytest_and_coverage_results
                 path: |
-                ./tests/pytest_results.xml
-                ./coverage/coverage_results.xml
+                    ./tests/pytest_results.xml
+                    ./coverage/coverage_results.xml
 
     static-code-analysis:
-        needs: unnit-tests
+        needs: unit-tests
         runs-on: ubuntu-latest
         timeout-minutes: 2
         steps:

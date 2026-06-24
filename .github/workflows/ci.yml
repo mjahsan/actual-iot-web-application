@@ -100,9 +100,6 @@ jobs:
             path: |
               ./tests/pytest_results.xml
               ./coverage/coverage_results.xml
-
-  step-3-static-code-analysis:
-    steps:
       
 
 
