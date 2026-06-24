@@ -25,16 +25,25 @@ jobs:
         run: pip install pip-audit
 
       - name: Scan Dashboard Dependencies
-        run: pip-audit --min-severity high -r ./dashboard_app/requirements.txt || echo "Vulnerabilities found, but passing the build anyway."
+        continue-on-error: true # Continuing on error/vulnerability issues but exporting audit result for future inspection
+        run: pip-audit -r ./dashboard_app/requirements.txt --format json > ./dashboard_audit_result.json
 
       - name: Scan Simulator Dependencies
-        run: pip-audit --min-severity high -r ./simulator/requirements.txt || echo "Vulnerabilities found, but passing the build anyway."
+        continue-on-error: true # Continuing on error/vulnerability issues but exporting audit result for future inspection
+        run: pip-audit -r ./simulator/requirements.txt --format json > ./simulator_audit_result.json
         
       - name: Scan Test Dependencies
-        run: pip-audit --min-severity high -r ./tests/requirements.txt || echo "Vulnerabilities found, but passing the build anyway."
-
-      - name: Capture Vulnerability
-        run: |
+        continue-on-error: true # Continuing on error/vulnerability issues but exporting audit result for future inspection
+        run: pip-audit -r ./tests/requirements.txt --format json > ./test_audit_result.json
+      
+      - name: Archive Test & Coverage Results
+        uses: actions/upload-artifact@v7 # Archiving audit results
+        with:
+          name: audit_results
+          path: |
+            ./dashboard_audit_result.json
+            ./simulator_audit_result.json
+            ./test_audit_result.json
           
 
   step-2-unit-tests:
