@@ -117,13 +117,13 @@ jobs:
 
         - name: Docker Build - Dashboard App Image
           run: |
-          docker build -t dashboard_app:${{ github.sha }} ./dashboard_app/
-        # github.sha is used for traceability - no verify which version of the code or commit is running on the cluster
+            docker build -t dashboard_app:${{ github.sha }} ./dashboard_app/
+          # github.sha is used for traceability - no verify which version of the code or commit is running on the cluster
 
         - name: Docker Build - Simulator Image
           run: |
-          docker build -t simulator:${{ github.sha }} ./data_simulator/
-        # github.sha is used for traceability - no verify which version of the code or commit is running on the cluster
+            docker build -t simulator:${{ github.sha }} ./data_simulator/
+          # github.sha is used for traceability - no verify which version of the code or commit is running on the cluster
 
         - name: Trivy Image Scan- Dashboard App
           uses: aquasecurity/trivy-action@v0.36.0
