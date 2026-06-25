@@ -5,6 +5,11 @@ on:
     branches:
       - 'feature/*' # Workflow only for feature branch
 
+# Required for OICD connection to ECR
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   step-1-dependencies-vulnerability-checks:
     # ---------------------------------------------------------------------------------
@@ -104,10 +109,6 @@ jobs:
     # ------------------------------------------------------------------------------------------------------------------------
     # 3. Conduct static analysis on the code. Have made that a part of 'main' as the sonar cloud is restricted to only 'main' branches. Refer to sonar_cloud_test.yml
     # ------------------------------------------------------------------------------------------------------------------------
-# Required for OICD connection to ECR
-permissions:
-  id-token: write
-  contents: read
 
   step-4-docker-image-with-trivy-scan-and-image-push-to-ecr:
     # -----------------------------------------------------------------------------------------------------
@@ -152,12 +153,16 @@ permissions:
           uses: aws-actions/configure-aws-credentials@v6.1.0
           with:
             aws-region: us-east-1
-            role-to-assume: ${{ AWS_ECR_GITHUB_ROLE }}
+            role-to-assume: ${{ var.AWS_ECR_GITHUB_ROLE }}
+        
+        - name: Login to Amazon ECR
+          id: login-ecr
+          uses: aws-actions/amazon-ecr-login@v2
 
         - name: Push to ECR registry
           run: |
-            docker tag dashboard_app:${{ github.sha }} ${{ ECR_REGISTRY }}/dashboard-app:${{ github.sha }}
-            docker push ${{ ECR_REGISTRY }}/dashboard-app:${{ github.sha }}
-            docker tag data_simulator:${{ github.sha }} ${{ ECR_REGISTRY }}/data-simulator:${{ github.sha }}
-            docker push ${{ ECR_REGISTRY }}/data-simulator:${{ github.sha }}
+            docker tag dashboard_app:${{ github.sha }} ${{ var.ECR_REGISTRY }}/dashboard-app:${{ github.sha }}
+            docker push ${{ var.ECR_REGISTRY }}/dashboard-app:${{ github.sha }}
+            docker tag data_simulator:${{ github.sha }} ${{ var.ECR_REGISTRY }}/data-simulator:${{ github.sha }}
+            docker push ${{ var.ECR_REGISTRY }}/data-simulator:${{ github.sha }}
 
