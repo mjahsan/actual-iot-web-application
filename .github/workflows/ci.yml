@@ -104,8 +104,12 @@ jobs:
     # ------------------------------------------------------------------------------------------------------------------------
     # 3. Conduct static analysis on the code. Have made that a part of 'main' as the sonar cloud is restricted to only 'main' branches. Refer to sonar_cloud_test.yml
     # ------------------------------------------------------------------------------------------------------------------------
+# Required for OICD connection to ECR
+permissions:
+  id-token: write
+  contents: read
 
-  step-4-docker-image-build-and-trivy-scan:
+  step-4-docker-image-with-trivy-scan-and-image-push-to-ecr:
     # -----------------------------------------------------------------------------------------------------
     # 4. Build docker image of the dashboard app and simulator
     # -----------------------------------------------------------------------------------------------------
@@ -132,17 +136,28 @@ jobs:
 
         - name: Docker Build - Simulator Image
           run: |
-            docker build -t simulator:${{ github.sha }} ./data_simulator/
+            docker build -t data_simulator:${{ github.sha }} ./data_simulator/
           # github.sha is used for traceability - no verify which version of the code or commit is running on the cluster
 
         - name: Trivy Image Scan- Simulator
           uses: aquasecurity/trivy-action@v0.36.0
           with:
-            image-ref: 'simulator:${{ github.sha }}'
+            image-ref: 'data_simulator:${{ github.sha }}'
             format: 'table'
             exit-code: '0' # Change to '1' to stop the pipeline and prevent vulnerable images from getting pushed to ECR
             ignore-unfixed: true
             severity: 'CRITICAL,HIGH'
+        
+        - name: Configure AWS Credentials
+          uses: aws-actions/configure-aws-credentials@v6.1.0
+          with:
+            aws-region: us-east-1
+            role-to-assume: ${{ AWS_ECR_GITHUB_ROLE }}
 
-
+        - name: Push to ECR registry
+          run: |
+            docker tag dashboard_app:${{ github.sha }} ${{ ECR_REGISTRY }}/dashboard-app:${{ github.sha }}
+            docker push ${{ ECR_REGISTRY }}/dashboard-app:${{ github.sha }}
+            docker tag data_simulator:${{ github.sha }} ${{ ECR_REGISTRY }}/data-simulator:${{ github.sha }}
+            docker push ${{ ECR_REGISTRY }}/data-simulator:${{ github.sha }}
 
