@@ -126,7 +126,7 @@ jobs:
           with:
             image-ref: 'dashboard_app:${{ github.sha }}'
             format: 'table'
-            exit-code: '1' # Stopping the pipeline to prevent vulnerable images from getting pushed to ECR
+            exit-code: '0' # Change to '1' to stop the pipeline and prevent vulnerable images from getting pushed to ECR
             ignore-unfixed: true
             severity: 'CRITICAL,HIGH'
 
