@@ -153,7 +153,7 @@ jobs:
           uses: aws-actions/configure-aws-credentials@v6.1.0
           with:
             aws-region: us-east-1
-            role-to-assume: ${{ var.AWS_ECR_GITHUB_ROLE }}
+            role-to-assume: ${{ vars.AWS_ECR_GITHUB_ROLE }}
         
         - name: Login to Amazon ECR
           id: login-ecr
@@ -161,8 +161,8 @@ jobs:
 
         - name: Push to ECR registry
           run: |
-            docker tag dashboard_app:${{ github.sha }} ${{ var.ECR_REGISTRY }}/dashboard-app:${{ github.sha }}
-            docker push ${{ var.ECR_REGISTRY }}/dashboard-app:${{ github.sha }}
-            docker tag data_simulator:${{ github.sha }} ${{ var.ECR_REGISTRY }}/data-simulator:${{ github.sha }}
-            docker push ${{ var.ECR_REGISTRY }}/data-simulator:${{ github.sha }}
+            docker tag dashboard_app:${{ github.sha }} ${{ vars.ECR_REGISTRY }}/dashboard-app:${{ github.sha }}
+            docker push ${{ vars.ECR_REGISTRY }}/dashboard-app:${{ github.sha }}
+            docker tag data_simulator:${{ github.sha }} ${{ vars.ECR_REGISTRY }}/data-simulator:${{ github.sha }}
+            docker push ${{ vars.ECR_REGISTRY }}/data-simulator:${{ github.sha }}
 
