@@ -112,7 +112,8 @@ jobs:
 
   step-4-docker-image-with-trivy-scan-and-image-push-to-ecr:
     # -----------------------------------------------------------------------------------------------------
-    # 4. Build docker image of the dashboard app and simulator
+    # 4. Build docker images  of the dashboard app and simulator, scan the images using Trivy and push it to AWS ECR
+    #    Better to split the step in multiple ones to isolate failure
     # -----------------------------------------------------------------------------------------------------
     needs: step-2-unit-tests
     runs-on: ubuntu-latest
